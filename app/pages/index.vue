@@ -269,7 +269,7 @@ const instaImages = [
   { src:("../assets/images/coffee-camera.jpg"), alt: "Insta Feed 1" },
   { src:("../assets/images/Rectangle 9.png"), alt: "Insta Feed 2" },
   { src: ("../assets/images/Rectangle 10.png"), alt: "Insta Feed 3" },
-// { src: new URL("../assets/images/rectangle 11.png", import.meta.url).href, alt: "Insta Feed 4" }
+{ src: new URL("../assets/images/Rectangle 11.png", import.meta.url).href, alt: "Insta Feed 4" }
 ];
 import { ref, onMounted, onUnmounted } from "vue";
 const currentImage = ref(0);
