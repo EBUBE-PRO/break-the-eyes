@@ -98,11 +98,11 @@
 <!-- Image column on the left -->
 <div class="col-12 col-lg-6 order-2 order-lg-1 text-lg-end mt-5 mt-lg-0">
   <div class="d-inline-block position-relative tribe-stack">
-    <img
+<!-- <img
       src="../assets/images/team 2.png"
       alt="team 2"
       class="img-fluid w-100"
-    />
+    /> -->
   </div>
 </div>
 
@@ -135,11 +135,11 @@
       <!-- Image column on the right -->
       <div class="col-12 col-lg-6 text-lg-end mt-5 mt-lg-0 order-2 order-lg-2">
         <div class="d-inline-block position-relative tribe-stack">
-          <img
+<!-- <img
             src="../assets/images/team 3.png"
             alt="Our Vision"
             class="img-fluid w-100"
-          />
+          /> -->
         </div>
       </div>
       
