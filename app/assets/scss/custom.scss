@@ -1,0 +1,117 @@
+// Override Bootstrap variables BEFORE importing
+$primary: #BE1622;    
+$secondary: #142a20;  
+$success: #4caf50;  
+$background: #F0F0F0; 
+
+
+$font-family-base: 'Inter', sans-serif;
+
+body {
+  background: $background !important;
+  font-family: 'Inter', sans-serif; 
+}
+
+// Button arrow hover effect
+.btn {
+  .bi-arrow-up-right {
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover .bi-arrow-up-right {
+    transform: rotate(90deg);
+  }
+}
+
+// Import only what you need
+@import "bootstrap/scss/bootstrap";
+
+.services-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+
+.project-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.project-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $primary;
+}
+.project-meta {
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.media-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.media-wrapper img,
+.media-wrapper video {
+  max-width: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.card {
+  flex: 1 1 320px;
+  background: #fafafa;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 2rem;
+  margin-bottom: 1rem;
+}
+.card h3 {
+  color: $secondary;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+.tech-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.tech-list span {
+  background: $primary;
+  color: #fff;
+  padding: 0.4rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.links a {
+  color: $primary;
+  text-decoration: underline;
+  font-weight: 500;
+}
+@media (max-width: 900px) {
+  .grid {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .services-container {
+    padding: 1rem;
+  }
+  .card {
+    padding: 1.2rem;
+  }
+}
