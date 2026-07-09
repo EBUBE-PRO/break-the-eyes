@@ -60,8 +60,8 @@ export const useProjectsStore = defineStore('projects', {
         
         this.items.unshift(data as Project);
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to add project.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to add project.';
         return false;
       } finally {
         this.loading = false;
@@ -84,8 +84,8 @@ export const useProjectsStore = defineStore('projects', {
         const index = this.items.findIndex(p => p.id === id);
         if (index !== -1) this.items[index] = data as Project;
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to update project.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to update project.';
         return false;
       } finally {
         this.loading = false;

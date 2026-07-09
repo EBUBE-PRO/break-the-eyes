@@ -49,14 +49,18 @@
       </div>
       <hr>
       
-      <div class="d-flex justify-content-between py-4 ">
-        <p class="mb-0">© Break The Eyes</p>
+      <div class="d-flex flex-column flex-md-row justify-content-between py-4 align-items-center">
+        <p class="mb-0 text-muted">© {{ new Date().getFullYear() }} Break The Eyes. All rights reserved.</p>
+        <div class="my-2 my-md-0">
+          <NuxtLink to="/privacy-policy" class="footer-text me-3 text-decoration-none">Privacy Policy</NuxtLink>
+          <NuxtLink to="/terms-of-service" class="footer-text text-decoration-none">Terms of Service</NuxtLink>
+        </div>
         <div class="">
-        <a href="https://pageit.io/" target="_blank">
-        <img src="https://tbproperty.net/storage/page-it-stamp.svg" alt="Pageit Logo">
-        </a>
+          <a href="https://pageit.io/" target="_blank">
+            <img src="https://tbproperty.net/storage/page-it-stamp.svg" alt="Pageit Logo">
+          </a>
         </div>
-        </div>
+      </div>
     </div>
     
   </footer>

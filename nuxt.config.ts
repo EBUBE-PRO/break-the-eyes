@@ -24,11 +24,10 @@ export default defineNuxtConfig({
     }
   },
   css: [
-
     "@/assets/scss/custom.scss",
     "@/assets/css/bthe.css",
     "bootstrap-icons/font/bootstrap-icons.css",
-
+    "vue3-toastify/dist/index.css"
   ],
   modules: [
     '@nuxtjs/supabase',

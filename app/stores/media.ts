@@ -67,8 +67,8 @@ export const useMediaStore = defineStore('media', {
         if (error) throw error;
         await this.fetchMedia();
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to upload file.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to upload file.';
         return false;
       } finally {
         this.loading = false;

@@ -55,8 +55,8 @@ export const useUsersStore = defineStore('users', {
         const index = this.items.findIndex(u => u.id === id);
         if (index !== -1) this.items[index] = data as UserProfile;
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to update user role.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to update user role.';
         return false;
       } finally {
         this.loading = false;

@@ -60,8 +60,8 @@ export const usePostsStore = defineStore('posts', {
         if (error) throw error;
         this.items.unshift(data as Post);
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to add post.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to add post.';
         return false;
       } finally {
         this.loading = false;
@@ -83,8 +83,8 @@ export const usePostsStore = defineStore('posts', {
         const index = this.items.findIndex(p => p.id === id);
         if (index !== -1) this.items[index] = data as Post;
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to update post.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to update post.';
         return false;
       } finally {
         this.loading = false;

@@ -46,32 +46,41 @@
   <div class="container pb-5 min-vh-50">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-11">
-        <TransitionGroup 
-          name="project-fade" 
-          tag="div" 
-          class="row g-4 g-md-5"
-        >
-          <div 
-            v-for="project in filteredProjects" 
-            :key="project.id"
-            class="col-6 mb-4"
-          >
-            <div class="project-image w-100 p-0 text-center project-image-hover">
-              <div class="project-img-wrapper position-relative overflow-hidden rounded-4">
-                <img
-                  :src="project.image_url"
-                  :alt="project.title"
-                  class="img-fluid w-100 project-main-img"
-                />
-                <button class="project-hover-btn" type="button">
-                  <i class="bi bi-arrow-right-circle-fill"></i>
-                </button>
-              </div>
-              <h4 class="fw-bold mt-3">{{ project.title }}</h4>
-              <p class="lead text-muted">{{ project.description }}</p>
+          <div v-if="pending" class="col-12 py-5 text-center">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Loading projects...</span>
             </div>
+            <p class="mt-3 text-muted">Loading projects...</p>
           </div>
-        </TransitionGroup>
+          
+          <div v-else>
+            <TransitionGroup 
+              name="project-fade" 
+              tag="div" 
+              class="row g-4 g-md-5"
+            >
+              <div 
+                v-for="project in filteredProjects" 
+                :key="project.id"
+                class="col-6 mb-4"
+              >
+                <div class="project-image w-100 p-0 text-center project-image-hover">
+                  <div class="project-img-wrapper position-relative overflow-hidden rounded-4">
+                    <img
+                      :src="project.image_url"
+                      :alt="project.title"
+                      class="img-fluid w-100 project-main-img"
+                    />
+                    <button class="project-hover-btn" type="button">
+                      <i class="bi bi-arrow-right-circle-fill"></i>
+                    </button>
+                  </div>
+                  <h4 class="fw-bold mt-3">{{ project.title }}</h4>
+                  <p class="lead text-muted">{{ project.description }}</p>
+                </div>
+              </div>
+            </TransitionGroup>
+          </div>
 
         <!-- Custom Project Grid -->
         <div class="col-12 mt-5">
@@ -169,8 +178,6 @@
                   <span v-if="submitting">Sending...</span>
                   <span v-else>Get in Touch <i class="bi bi-arrow-up-right"></i></span>
                 </button>
-                
-                <p v-if="successMsg" class="mt-3 text-success small fw-bold text-center">{{ successMsg }}</p>
               </form> 
             </div>
           </div>
@@ -184,6 +191,9 @@
 <script lang="ts" setup>
 import { useSupabase } from '~/composables/useSupabase';
 import type { Database } from '~/types/supabase'
+import { getWhatsAppUrl } from '~/utils/whatsapp';
+
+import { toast } from 'vue3-toastify';
 
 const supabase = useSupabase();
 const currentCategory = ref('All');
@@ -196,7 +206,7 @@ const categories = [
   'Events & PR Solutions'
 ];
 
-const { data: projects } = await useAsyncData('projects', async () => {
+const { data: projects, pending } = await useLazyAsyncData('projects', async () => {
   const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
   return data || [];
 });
@@ -218,7 +228,6 @@ const formData = ref({
   source_page: 'Projects'
 });
 const submitting = ref(false);
-const successMsg = ref('');
 
 async function handleSubmit() {
   try {
@@ -227,7 +236,7 @@ async function handleSubmit() {
     
     if (error) throw error;
     
-    successMsg.value = 'Success! Redirecting to WhatsApp...';
+    toast.success('Success! Redirecting to WhatsApp...', { autoClose: 2000 });
     
     // WhatsApp redirect
     const waUrl = getWhatsAppUrl('2349025837982', {
@@ -236,15 +245,15 @@ async function handleSubmit() {
       message: formData.value.message
     });
     
+    // Reset form immediately
+    formData.value = { full_name: '', email: '', message: '', source_page: 'Projects' };
+    
     setTimeout(() => {
-      window.open(waUrl, '_blank');
-      // Reset form
-      formData.value = { full_name: '', email: '', message: '', source_page: 'Projects' };
-      successMsg.value = '';
+      window.location.href = waUrl;
     }, 1500);
     
   } catch (error) {
-    alert('Something went wrong. Please try again.');
+    toast.error('Something went wrong. Please try again.', { autoClose: 3000 });
   } finally {
     submitting.value = false;
   }

@@ -163,7 +163,6 @@
                   <span v-if="submitting">Sending...</span>
                   <span v-else>Get in Touch <i class="bi bi-arrow-up-right"></i></span>
                 </button>
-                <p v-if="successMsg" class="mt-3 text-success small fw-bold text-center">{{ successMsg }}</p>
               </form> 
             </div>
           </div>
@@ -176,6 +175,8 @@
 <script setup lang="ts">
 import { useSupabase } from '~/composables/useSupabase';
 import type { Database } from '~/types/supabase'
+import { toast } from 'vue3-toastify';
+import { getWhatsAppUrl } from '~/utils/whatsapp';
 
 const supabase = useSupabase();
 
@@ -187,7 +188,6 @@ const formData = ref({
   source_page: 'Services'
 });
 const submitting = ref(false);
-const successMsg = ref('');
 
 async function handleSubmit() {
   try {
@@ -196,7 +196,7 @@ async function handleSubmit() {
     
     if (error) throw error;
     
-    successMsg.value = 'Success! Redirecting to WhatsApp...';
+    toast.success('Success! Redirecting to WhatsApp...', { autoClose: 2000 });
     
     // WhatsApp redirect
     const waUrl = getWhatsAppUrl('2349025837982', {
@@ -205,15 +205,15 @@ async function handleSubmit() {
       message: formData.value.message
     });
     
+    // Reset form immediately
+    formData.value = { full_name: '', email: '', message: '', source_page: 'Services' };
+    
     setTimeout(() => {
-      window.open(waUrl, '_blank');
-      // Reset form
-      formData.value = { full_name: '', email: '', message: '', source_page: 'Services' };
-      successMsg.value = '';
+      window.location.href = waUrl;
     }, 1500);
     
   } catch (error) {
-    alert('Something went wrong. Please try again.');
+    toast.error('Something went wrong. Please try again.', { autoClose: 3000 });
   } finally {
     submitting.value = false;
   }

@@ -1,6 +1,5 @@
 import { useSupabase } from '~/composables/useSupabase';
 import { defineStore } from 'pinia';
-import type { Database } from '../types/supabase';
 
 export interface Lead {
   id: number;

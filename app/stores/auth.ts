@@ -1,6 +1,5 @@
 import { useSupabase } from '~/composables/useSupabase';
 import { defineStore } from 'pinia';
-import { watch } from 'vue';
 import { navigateTo } from '#app';
 
 interface AuthState {
@@ -48,8 +47,8 @@ export const useAuthStore = defineStore('auth', {
         
         this.user = data.user;
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Login failed. Please check your credentials.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Login failed. Please check your credentials.';
         console.error('[Auth Store] Login Error:', err);
         return false;
       } finally {

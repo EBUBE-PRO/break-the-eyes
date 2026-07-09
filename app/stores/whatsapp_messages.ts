@@ -56,8 +56,8 @@ export const useWhatsAppStore = defineStore('whatsapp', {
         const index = this.items.findIndex(m => m.id === id);
         if (index !== -1) this.items[index] = data as WhatsAppMessage;
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to update status.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to update status.';
         return false;
       } finally {
         this.loading = false;

@@ -54,8 +54,8 @@ export const useCategoriesStore = defineStore('categories', {
         if (error) throw error;
         this.items.push(data as Category);
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to add category.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to add category.';
         return false;
       } finally {
         this.loading = false;
@@ -76,8 +76,8 @@ export const useCategoriesStore = defineStore('categories', {
         const index = this.items.findIndex(c => c.id === id);
         if (index !== -1) this.items[index] = data as Category;
         return true;
-      } catch (err: any) {
-        this.error = err.message || 'Failed to update category.';
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Failed to update category.';
         return false;
       } finally {
         this.loading = false;
