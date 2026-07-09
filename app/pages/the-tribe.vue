@@ -227,7 +227,8 @@
           <span>
             <p class=" lead fs-5.5">Almost a decade of <br class="d-none d-md-inline" /> experience in digital <br
                 class="d-none d-md-inline" /> media, creative <br class="d-none d-md-inline" /> storytelling, and tech
-              <br class="d-none d-md-inline" /> solutions.</p>
+              <br class="d-none d-md-inline" /> solutions.
+            </p>
           </span>
         </span>
         <span>
@@ -443,7 +444,8 @@
           <span>
             <p class=" lead fs-5.5">Almost a decade of <br class="d-none d-md-inline" /> experience in digital <br
                 class="d-none d-md-inline" /> media, creative <br class="d-none d-md-inline" /> storytelling, and tech
-              <br class="d-none d-md-inline" /> solutions.</p>
+              <br class="d-none d-md-inline" /> solutions.
+            </p>
           </span>
         </span>
         <span>

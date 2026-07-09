@@ -62,7 +62,7 @@
               <div 
                 v-for="project in filteredProjects" 
                 :key="project.id"
-                class="col-6 mb-4"
+                class="col-12 col-md-6 mb-4"
               >
                 <div class="project-image w-100 p-0 text-center project-image-hover">
                   <div class="project-img-wrapper position-relative overflow-hidden rounded-4">

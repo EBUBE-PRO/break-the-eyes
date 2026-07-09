@@ -173,8 +173,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const mobileOpen = ref(false);
 
 function openMenu() {
@@ -185,6 +187,10 @@ function closeMenu() {
   mobileOpen.value = false;
   document.body.style.overflow = ""; // restore scroll
 }
+
+watch(() => route.path, () => {
+  closeMenu();
+});
 
 // ESC to close
 function onKey(e: KeyboardEvent) {

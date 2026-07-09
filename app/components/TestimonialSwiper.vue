@@ -79,7 +79,7 @@ const testimonials = [
 }
 .t-quote blockquote {
   font-size: clamp(1.25rem, 2.5vw, 1.75rem); 
-  line-height: 1.0;
+  line-height: 1.4;
   font-weight: 200; 
   color: #111;     
   margin-bottom: 2rem;
@@ -89,6 +89,12 @@ const testimonials = [
   font-size: clamp(1.1rem, 1.5vw, 1.5rem);
   opacity: 0.9;
   letter-spacing: 1px;
+}
+
+@media (max-width: 576px) {
+  .t-quote {
+    padding: 0 1.5rem;
+  }
 }
 
 .t-swiper :deep(.swiper-button-prev),

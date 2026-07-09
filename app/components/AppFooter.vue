@@ -6,9 +6,9 @@
         <div class="col-md-4">
           <h4 class="_bthemenutext">Company</h4>
           <ul class="list-unstyled">
-            <li><a class="footer-text underline-animation" href="">About Break The Eyes</a></li>
-            <li><a class="footer-text underline-animation" href="">Our Services</a></li>
-            <li><a class="footer-text underline-animation" href="">The Tribe</a></li>
+            <li><NuxtLink class="footer-text underline-animation" to="/the-tribe">About Break The Eyes</NuxtLink></li>
+            <li><NuxtLink class="footer-text underline-animation" to="/services">Our Services</NuxtLink></li>
+            <li><NuxtLink class="footer-text underline-animation" to="/the-tribe">The Tribe</NuxtLink></li>
           </ul>
         </div>
         <div class="col-md-4">
