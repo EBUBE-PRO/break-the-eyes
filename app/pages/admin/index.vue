@@ -1,335 +1,300 @@
 <template>
-  <div class="admin-dashboard min-vh-100 bg-light">
+  <div class="admin-layout">
+    <!-- Mobile Top Navbar -->
+    <header class="mobile-topbar d-flex d-lg-none align-items-center justify-content-between px-3 py-2">
+      <button class="hamburger-btn" @click="sidebarOpen = !sidebarOpen" aria-label="Toggle menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <img src="../../assets/images/brand-eye-black.svg" alt="BTE" height="30">
+      <div class="avatar-sm bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;font-size:0.8rem;flex-shrink:0;">
+        {{ (user?.user_metadata?.username || user?.email || 'U').charAt(0).toUpperCase() }}
+      </div>
+    </header>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <transition name="fade">
+      <div v-if="sidebarOpen" class="sidebar-overlay d-lg-none" @click="sidebarOpen = false"></div>
+    </transition>
+
     <!-- Sidebar -->
-    <aside class="admin-sidebar shadow-sm bg-white position-fixed h-100 p-4">
-      <div class="text-center mb-5">
-        <img src="../../assets/images/brand-eye-black.svg" alt="BTE" height="50">
+    <aside :class="['admin-sidebar', { 'sidebar-open': sidebarOpen }]">
+      <div class="sidebar-header d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-2">
+          <img src="../../assets/images/brand-eye-black.svg" alt="BTE" height="32">
+          <span class="fw-black sidebar-brand-text">BTE CMS</span>
+        </div>
+        <button class="d-lg-none close-sidebar-btn" @click="sidebarOpen = false">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
 
-      <nav class="nav flex-column gap-2">
-        <button 
-          v-for="item in menuItems" 
+      <nav class="sidebar-nav flex-grow-1">
+        <button
+          v-for="item in menuItems"
           :key="item.id"
-          @click="currentTab = item.id"
-          class="nav-link btn text-start d-flex align-items-center rounded-3 p-3 transition-all"
-          :class="currentTab === item.id ? 'active-link bg-dark text-white' : 'text-muted hover-bg'"
+          @click="selectTab(item.id)"
+          class="sidebar-item w-100 text-start d-flex align-items-center gap-3"
+          :class="{ 'sidebar-item-active': currentTab === item.id }"
         >
-          <i :class="item.icon" class="me-3 fs-5"></i>
-          <span class="fw-semibold">{{ item.label }}</span>
+          <div class="sidebar-icon"><i :class="item.icon"></i></div>
+          <span class="sidebar-label">{{ item.label }}</span>
+          <span v-if="item.badge" class="ms-auto badge bg-danger rounded-pill sidebar-badge">{{ item.badge }}</span>
         </button>
       </nav>
 
-      <div class="mt-auto pt-5">
-        <button @click="handleLogout" class="btn btn-outline-danger w-100 rounded-3 p-2 d-flex align-items-center justify-content-center">
-          <i class="bi bi-box-arrow-left me-2"></i>Logout
-        </button>
+      <div class="sidebar-footer">
+        <div class="user-card d-flex align-items-center gap-3">
+          <div class="avatar bg-dark text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+            {{ (user?.user_metadata?.username || user?.email || 'U').charAt(0).toUpperCase() }}
+          </div>
+          <div class="overflow-hidden flex-grow-1 sidebar-user-info">
+            <p class="mb-0 fw-bold small text-truncate">{{ user?.user_metadata?.username || 'Admin' }}</p>
+            <p class="mb-0 text-muted extra-small text-truncate">{{ user?.email }}</p>
+          </div>
+          <button class="logout-btn" @click="handleLogout" title="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
       </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="admin-main p-4 p-md-5">
-      <header class="d-flex align-items-center justify-content-between mb-5">
-        <div>
-          <h1 class="h2 fw-bold text-dark">{{ activeMenuLabel }}</h1>
-          <p class="text-muted small">Manage your business operations efficiently</p>
-        </div>
-        <div v-if="currentTab !== 'leads'">
-          <button class="btn btn-dark px-4 py-2 rounded-3 shadow-sm" @click="openAddModal">
-            <i class="bi bi-plus-lg me-2"></i>Add New
-          </button>
-        </div>
-      </header>
-
-      <!-- Leads Section -->
-      <section v-if="currentTab === 'leads'" class="section-card bg-white p-4 rounded-4 shadow-sm border">
-        <div v-if="loading" class="text-center py-5">
-          <div class="spinner-border text-dark" role="status"></div>
-        </div>
-        <div v-else-if="leads.length === 0" class="text-center py-5">
-          <i class="bi bi-envelope-open display-4 text-muted mb-3 d-block"></i>
-          <p class="text-muted">No leads found yet.</p>
-        </div>
-        <div v-else class="table-responsive">
-          <table class="table align-middle">
-            <thead class="text-muted small border-top-0">
-              <tr>
-                <th class="ps-0 py-3">NAME</th>
-                <th class="py-3">EMAIL</th>
-                <th class="py-3">MESSAGE</th>
-                <th class="py-3">DATE</th>
-                <th class="text-end py-3">ACTION</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="lead in leads" :key="lead.id" class="border-bottom">
-                <td class="ps-0 py-3">
-                  <span class="fw-bold">{{ lead.full_name }}</span>
-                </td>
-                <td class="py-3 text-muted">{{ lead.email }}</td>
-                <td class="py-3">
-                  <span class="text-truncate d-inline-block text-muted" style="max-width: 300px;">
-                    {{ lead.message }}
-                  </span>
-                </td>
-                <td class="py-3 text-muted small">{{ formatDate(lead.created_at) }}</td>
-                <td class="text-end py-3">
-                  <a :href="'https://wa.me/2349025837982?text=Hello ' + lead.full_name + ', replying to your inquiry: ' + lead.message" 
-                     target="_blank" 
-                     class="btn btn-sm btn-outline-success rounded-pill px-3">
-                    <i class="bi bi-whatsapp me-1"></i>Reply
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Projects Section -->
-      <section v-else-if="currentTab === 'projects'" class="section-container">
-        <div class="row g-4">
-          <div v-for="project in projects" :key="project.id" class="col-md-6 col-xl-4">
-            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-              <img :src="project.image_url" class="card-img-top" height="200" style="object-fit: cover;">
-              <div class="card-body p-4">
-                <span class="badge bg-light text-dark mb-2 px-3 rounded-pill">{{ project.category }}</span>
-                <h5 class="fw-bold mb-3">{{ project.title }}</h5>
-                <p class="text-muted small line-clamp-3">{{ project.description }}</p>
-                <div class="d-flex gap-2 mt-4">
-                  <button class="btn btn-sm btn-light flex-grow-1 py-2 rounded-3 border">Edit</button>
-                  <button @click="deleteItem('projects', project.id)" class="btn btn-sm btn-outline-danger py-2 rounded-3">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Add Project Modal -->
-        <div v-if="showModal" class="modal-overlay d-flex align-items-center justify-content-center">
-          <div class="modal-card bg-white p-4 p-md-5 rounded-4 shadow-lg border w-100" style="max-width: 600px;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <h3 class="fw-bold m-0">Add New Project</h3>
-              <button @click="showModal = false" class="btn-close"></button>
-            </div>
-
-            <form @submit.prevent="saveProject">
-              <div class="mb-3">
-                <label class="form-label fw-bold small">Project Title</label>
-                <input v-model="newProject.title" type="text" class="form-control rounded-3 py-2" placeholder="e.g. Jane Egerton-Idehen" required>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-bold small">Category</label>
-                <select v-model="newProject.category" class="form-select rounded-3 py-2" required>
-                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-bold small">Image URL</label>
-                <input v-model="newProject.image_url" type="text" class="form-control rounded-3 py-2" placeholder="Paste image link here" required>
-                <small class="text-muted">Tip: Use a direct link to an image.</small>
-              </div>
-
-              <div class="mb-4">
-                <label class="form-label fw-bold small">Description</label>
-                <textarea v-model="newProject.description" class="form-control rounded-3 py-2" rows="3" placeholder="Brief project summary..." required></textarea>
-              </div>
-
-              <div class="d-flex gap-3">
-                <button type="button" @click="showModal = false" class="btn btn-light flex-grow-1 py-2 rounded-3 border">Cancel</button>
-                <button type="submit" class="btn btn-dark flex-grow-1 py-2 rounded-3" :disabled="saving">
-                  <span v-if="saving" class="spinner-border spinner-border-sm me-2"></span>
-                  Save Project
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
-
-      <!-- Services Section placeholder -->
-      <section v-else-if="currentTab === 'services'" class="bg-white p-5 rounded-4 text-center border">
-        <h3 class="text-muted">Services Management coming soon</h3>
-      </section>
+    <main class="admin-main">
+      <component :is="activeComponent" />
     </main>
   </div>
 </template>
 
-<script setup>
-const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+<script setup lang="ts">
+import { useAuth } from '~/composables/useAuth';
 
-const currentTab = ref('leads')
-const loading = ref(true)
-const leads = ref([])
-const projects = ref([])
-const showModal = ref(false)
-const saving = ref(false)
-const newProject = ref({
-  title: '',
-  category: 'Digital Branding & Strategy',
-  description: '',
-  image_url: ''
-})
+import DashboardTab from '~/components/admin/tabs/DashboardTab.vue';
+import PostsTab from '~/components/admin/tabs/PostsTab.vue';
+import MediaTab from '~/components/admin/tabs/MediaTab.vue';
+import ProjectsTab from '~/components/admin/tabs/ProjectsTab.vue';
+import CategoriesTab from '~/components/admin/tabs/CategoriesTab.vue';
+import WhatsAppTab from '~/components/admin/tabs/WhatsAppTab.vue';
+import UsersTab from '~/components/admin/tabs/UsersTab.vue';
+import SettingsTab from '~/components/admin/tabs/SettingsTab.vue';
 
-const categories = [
-  'Digital Branding & Strategy',
-  'Multimedia Production',
-  'Tech & Digital Solutions',
-  'Events & PR Solutions'
-];
+definePageMeta({ layout: false, middleware: ['auth'] });
 
-definePageMeta({
-  middleware: ['auth']
-})
+const { user, logout } = useAuth();
+const currentTab = ref('dashboard');
+const sidebarOpen = ref(false);
 
 const menuItems = [
-  { id: 'leads', label: 'Inquiries & Leads', icon: 'bi bi-envelope-heart' },
-  { id: 'projects', label: 'Manage Projects', icon: 'bi bi-grid-1x2' },
-  { id: 'services', label: 'Brand Services', icon: 'bi bi-award' }
-]
+  { id: 'dashboard', label: 'Dashboard', icon: 'bi bi-speedometer2' },
+  { id: 'posts', label: 'Content / Posts', icon: 'bi bi-file-earmark-text' },
+  { id: 'media', label: 'Media Library', icon: 'bi bi-images' },
+  { id: 'projects', label: 'Projects', icon: 'bi bi-grid-1x2' },
+  { id: 'categories', label: 'Categories', icon: 'bi bi-tags' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: 'bi bi-whatsapp' },
+  { id: 'users', label: 'Users', icon: 'bi bi-people' },
+  { id: 'settings', label: 'Settings', icon: 'bi bi-gear' },
+];
 
-const activeMenuLabel = computed(() => {
-  return menuItems.find(item => item.id === currentTab.value)?.label
-})
+const tabComponents: Record<string, any> = {
+  dashboard: DashboardTab,
+  posts: PostsTab,
+  media: MediaTab,
+  projects: ProjectsTab,
+  categories: CategoriesTab,
+  whatsapp: WhatsAppTab,
+  users: UsersTab,
+  settings: SettingsTab
+};
 
-onMounted(() => {
-  fetchData()
-})
+const activeComponent = computed(() => tabComponents[currentTab.value]);
 
-watch(currentTab, () => {
-  fetchData()
-})
-
-async function fetchData() {
-  loading.value = true
-  if (currentTab.value === 'leads') {
-    const { data } = await supabase.from('leads').select('*').order('created_at', { ascending: false })
-    leads.value = data || []
-  } else if (currentTab.value === 'projects') {
-    const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false })
-    projects.value = data || []
-  }
-  loading.value = false
+function selectTab(id: string) {
+  currentTab.value = id;
+  sidebarOpen.value = false; // close sidebar on mobile after selection
 }
 
-function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
-}
-
-async function handleLogout() {
-  await supabase.auth.signOut()
-  navigateTo('/admin/login')
-}
-
-// Modal functionality
-function openAddModal() {
-  newProject.value = { title: '', category: 'Digital Branding & Strategy', description: '', image_url: '' }
-  showModal.value = true
-}
-
-async function saveProject() {
-  try {
-    saving.value = true
-    const { error } = await supabase.from('projects').insert([newProject.value])
-    if (error) throw error
-    
-    showModal.value = false
-    fetchData()
-  } catch (error) {
-    alert(error.message)
-  } finally {
-    saving.value = false
-  }
-}
-
-async function deleteItem(table, id) {
-  if (confirm('Are you sure you want to delete this?')) {
-    const { error } = await supabase.from(table).delete().eq('id', id)
-    if (!error) fetchData()
-  }
+function handleLogout() {
+  if (confirm('Are you sure you want to logout?')) logout();
 }
 </script>
 
 <style scoped>
-.admin-sidebar {
-  width: 280px;
-  background: white;
-  z-index: 1000;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+* { font-family: 'Inter', sans-serif; }
+
+/* ── Layout ── */
+.admin-layout {
   display: flex;
-  flex-direction: column;
-}
-
-.admin-main {
-  margin-left: 280px;
-  background-color: #f8f9fa;
   min-height: 100vh;
+  background: #f4f5f7;
 }
 
-.nav-link {
-  border: none;
-  background: none;
-  transition: all 0.2s ease;
-}
-
-.hover-bg:hover {
-  background-color: rgba(0,0,0,0.05) !important;
-  transform: translateX(5px);
-}
-
-.active-link {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.section-container {
-  min-height: 500px;
-}
-
-.modal-overlay {
+/* ── Mobile Top Bar ── */
+.mobile-topbar {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(5px);
-  z-index: 2000;
-  padding: 20px;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 1100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.hamburger-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+}
+.bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #111;
+  border-radius: 2px;
+  transition: all 0.3s;
 }
 
-.modal-card {
-  max-height: 90vh;
+/* ── Overlay ── */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1200;
+  backdrop-filter: blur(2px);
+}
+.fade-enter-active, .fade-leave-active { transition: opacity 0.25s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* ── Sidebar ── */
+.admin-sidebar {
+  width: 260px;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1300;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
 }
 
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-clamp: 3;
+.sidebar-brand-text {
+  color: #fff;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+.close-sidebar-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+.close-sidebar-btn:hover { color: #fff; }
+
+/* ── Nav ── */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: auto;
+}
+.sidebar-item {
+  background: none;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 12px;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.sidebar-item:hover {
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.9);
+}
+.sidebar-item-active {
+  background: rgba(178,34,34,0.2) !important;
+  color: #fff !important;
+  border: 1px solid rgba(178,34,34,0.35);
+}
+.sidebar-item-active .sidebar-icon { color: #ef4444; }
+
+.sidebar-icon {
+  width: 28px;
+  text-align: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.sidebar-badge { font-size: 0.65rem; }
+
+/* ── Footer ── */
+.sidebar-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.user-card {
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+}
+.avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 0.8rem;
+}
+.extra-small { font-size: 0.7rem; }
+.sidebar-user-info p { color: rgba(255,255,255,0.8); }
+.sidebar-user-info .text-muted { color: rgba(255,255,255,0.4) !important; }
+.logout-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.logout-btn:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+
+/* ── Main Content ── */
+.admin-main {
+  margin-left: 260px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 32px;
+  overflow-x: hidden;
 }
 
+/* ── Responsive ── */
 @media (max-width: 991.98px) {
   .admin-sidebar {
-    width: 80px;
-    padding: 20px 10px !important;
+    transform: translateX(-100%);
   }
-  .admin-sidebar span, .admin-sidebar .mt-auto span {
-    display: none;
+  .admin-sidebar.sidebar-open {
+    transform: translateX(0);
   }
   .admin-main {
-    margin-left: 80px;
-  }
-  .admin-sidebar .me-3 {
-    margin-right: 0 !important;
+    margin-left: 0;
+    padding: 16px;
+    padding-top: calc(56px + 16px); /* account for mobile topbar */
   }
 }
 </style>

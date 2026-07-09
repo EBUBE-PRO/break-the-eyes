@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="container tribe-banner position-relative">
     <img src="../assets/images/hero-section-grid.svg" class="bg-svg-overlay" alt="" />
     <div class="row align-items-start position-relative" style="z-index: 2;">
@@ -294,9 +294,10 @@
 
 
 <script lang="ts" setup>
+import { useSupabase } from '~/composables/useSupabase';
 import type { Database } from '~/types/supabase'
 
-const supabase = useSupabaseClient<Database>();
+const supabase = useSupabase();
 
 // Form logic
 const formData = ref({

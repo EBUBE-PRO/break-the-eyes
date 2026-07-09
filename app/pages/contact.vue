@@ -73,9 +73,10 @@
 </template>
 
 <script lang="ts" setup>
+import { useSupabase } from '~/composables/useSupabase';
 import type { Database } from '~/types/supabase'
 
-const supabase = useSupabaseClient<Database>();
+const supabase = useSupabase();
 
 const servicesLeft = ['Product design', 'Content Creation', 'Event & PR Planning', 'Photography'];
 const servicesRight = ['Startup Innovation', 'Others'];

@@ -174,9 +174,10 @@
 </template>
 
 <script setup lang="ts">
+import { useSupabase } from '~/composables/useSupabase';
 import type { Database } from '~/types/supabase'
 
-const supabase = useSupabaseClient<Database>();
+const supabase = useSupabase();
 
 // Form logic
 const formData = ref({
